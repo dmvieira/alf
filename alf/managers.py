@@ -5,10 +5,11 @@ from alf.tokens import Token, TokenError
 
 class TokenManager(object):
 
-    def __init__(self, token_endpoint, client_id, client_secret):
+    def __init__(self, token_endpoint, client_id, client_secret, storage_object=None):
         self._token_endpoint = token_endpoint
         self._client_id = client_id
         self._client_secret = client_secret
+	self._storage_object = storage_object
 
         self._token = Token()
 
@@ -31,7 +32,8 @@ class TokenManager(object):
     def _update_token(self):
         token_data = self._get_token_data()
         self._token = Token(token_data.get('access_token', ''),
-                            token_data.get('expires_in', 0))
+                            token_data.get('expires_in', 0),
+			    self._storage_object)
 
     def _request_token(self):
         response = requests.post(
