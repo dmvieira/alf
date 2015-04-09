@@ -20,10 +20,12 @@ class TokenManager(object):
         if not self._has_token():
             self._update_token()
 
-        return self.token_storage.get()
+        return self._token.access_token
 
     def _get_token_data(self):
-        token_data = self._request_token()
+        token_data = self.token_storage.request_token()
+	if not token_data:
+            token_data = self._request_token()
         return token_data
 
     def reset_token(self):

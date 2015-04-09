@@ -27,16 +27,18 @@ class Token(object):
 class TokenStorage(object):
     def __init__(self, custom_storage=None):
         self._storage = custom_storage or TokenDefaultStorage()
-        self._access_token = TOKEN_VALUE
-        self._expires_on = None
     
     def __call__(self, token):
         self._storage.set(TOKEN_KEY, token.access_token)
         self._storage.set(TOKEN_EXPIRES, token.expires_on
-        
-    @property
-    def access_token(self):
 
+    def request_token(self):
+        access_token = self._storage.get(TOKEN_KEY)
+        expires_on = self._storage.get(TOKEN_EXPIRES)
+        if access_token and expires_on:
+            return {TOKEN_KEY: access_token,
+                    TOKEN_EXPIRES: expires_on}
+        return dict()
 
 class TokenDefaultStorage(object):
 
