@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 import requests
-from alf.tokens import Token, TokenError
+from alf.tokens import Token, TokenError, TokenStorage
 
 
 class TokenManager(object):
 
-    def __init__(self, token_endpoint, client_id, client_secret, storage_object=None):
+    def __init__(self, token_endpoint, client_id, client_secret, token_storage=None):
         self._token_endpoint = token_endpoint
         self._client_id = client_id
         self._client_secret = client_secret
-	self._storage_object = storage_object
+	self._token_storage = TokenStorage(token_storage)
 
         self._token = Token()
 
@@ -20,7 +20,7 @@ class TokenManager(object):
         if not self._has_token():
             self._update_token()
 
-        return self._token.access_token
+        return self.token_storage.get()
 
     def _get_token_data(self):
         token_data = self._request_token()
@@ -31,9 +31,11 @@ class TokenManager(object):
 
     def _update_token(self):
         token_data = self._get_token_data()
-        self._token = Token(token_data.get('access_token', ''),
-                            token_data.get('expires_in', 0),
-			    self._storage_object)
+        access_token = token_data.get('access_token', '')
+        expires_in = token_data.get('expires_in', 0)
+        self._token = Token(access_token,
+                            expires_in)
+        self.token_storage(self_token)
 
     def _request_token(self):
         response = requests.post(

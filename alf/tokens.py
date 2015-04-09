@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 
 TOKEN_KEY = 'access_token'
 TOKEN_VALUE = ''
+TOKEN_EXPIRES = 'token_expires_on'
 
 class TokenError(Exception):
 
@@ -13,28 +14,31 @@ class TokenError(Exception):
 
 class Token(object):
 
-    def __init__(self, access_token='', expires_in=0, storage_object=None):
-        self._storage_object = storage_object or TokenStorage()
+    def __init__(self, access_token='', expires_in=0):
         self.access_token = access_token
         self._expires_in = expires_in
 
-        self._expires_on = datetime.now() + timedelta(seconds=self._expires_in)
+        self.expires_on = datetime.now() + timedelta(seconds=self._expires_in)
 
     def is_valid(self):
-        return self._expires_on > datetime.now()
-
-    @property
-    def access_token(self):
-        self._access_token = self._storage_object.get(TOKEN_KEY)
-        return self._access_token
-
-    @access_token.setter
-    def access_token(self, token):
-        self._access_token = token
-        self._storage_object.set(TOKEN_KEY, self._access_token)
+        return self.expires_on > datetime.now()
 
 
 class TokenStorage(object):
+    def __init__(self, custom_storage=None):
+        self._storage = custom_storage or TokenDefaultStorage()
+        self._access_token = TOKEN_VALUE
+        self._expires_on = None
+    
+    def __call__(self, token):
+        self._storage.set(TOKEN_KEY, token.access_token)
+        self._storage.set(TOKEN_EXPIRES, token.expires_on
+        
+    @property
+    def access_token(self):
+
+
+class TokenDefaultStorage(object):
 
     def __init__(self, key=TOKEN_KEY, token=TOKEN_VALUE):
         self.storage = dict()
