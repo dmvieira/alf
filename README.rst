@@ -61,7 +61,7 @@ This object can be a Redis, Memcache or your custom object.
         token_endpoint='http://example.com/token',
         client_id='client-id',
         client_secret='secret',
-        storage_object=redis)
+        token_storage=redis)
 
     resource_uri = 'http://example.com/resource'
 
