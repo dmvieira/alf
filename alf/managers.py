@@ -25,7 +25,6 @@ class TokenManager(object):
 
     def _get_token_data(self):
         token_data = self._token_storage.request_token()
-
         if not token_data:
             token_data = self._request_token()
             expires_in = token_data.get('expires_in', 0)

@@ -4,7 +4,7 @@ from mock import patch, Mock
 from unittest import TestCase
 
 from alf.managers import TokenManager, Token, TokenError
-from alf.tokens import TokenStorage
+from alf.tokens import TokenStorage, TokenDefaultStorage
 
 class TestTokenManager(TestCase):
 
@@ -70,35 +70,36 @@ class TestTokenManager(TestCase):
     @patch('alf.managers.TokenManager._request_token')
     def test_update_token_should_set_a_token_with_data_retrieved(self, _request_token):
         self.manager.reset_token()
-        expires = Token.calc_expires_on(100)
+        expires = 100
         _request_token.return_value = {'access_token': 'new_access_token',
-                                       'expires_on': expires}
+                                       'expires_in': expires}
 
         self.manager._token = Token('access_token',
-                                    expires_on=expires)
+                                    expires_on=0)
+
         self.manager._update_token()
 
         self.assertTrue(_request_token.called)
 
         self.assertEqual(self.manager._token.access_token, 'new_access_token')
-        self.assertEqual(self.manager._token.expires_on, expires)
+        self.assertLess(self.manager._token.expires_on, Token.calc_expires_on(expires))
 
     @patch('alf.managers.TokenManager._request_token')
     def test_update_token_should_set_a_token_with_data_retrieved_from_storage(self, _request_token):
         expires = Token.calc_expires_on(100)
         _request_token.return_value = dict()
+
         self.manager._token = Token('new_access_token',
                                     expires_on=expires)
-        storage = TokenStorage()
-        storage(self.manager._token)
+
+        self.manager._token_storage(self.manager._token)
 
         self.manager._update_token()
 
         self.assertFalse(_request_token.called)
 
         self.assertEqual(self.manager._token.access_token, 'new_access_token')
-        self.assertEqual(self.manager._token.expires_on,
-                         expires)
+        self.assertEqual(self.manager._token.expires_on, expires)
 
     def test_should_return_token_value(self):
         self.manager._token = Token('access_token', expires_on=Token.calc_expires_on(10))

@@ -48,13 +48,14 @@ class TokenStorage(object):
 
 class TokenDefaultStorage(object):
 
-    def __init__(self, key=TOKEN_KEY, token=TOKEN_VALUE):
+    def __init__(self, key=TOKEN_KEY, value=TOKEN_VALUE):
         self.storage = dict()
-        self.set(key, token)
+        self.set(key, value)
 
     def get(self, key=TOKEN_KEY):
         return self.storage.get(key)
 
-    def set(self, key=TOKEN_KEY, token=TOKEN_VALUE):
-        self.storage[key] = token
+    def set(self, key=TOKEN_KEY, value=TOKEN_VALUE):
+        self.storage[key] = value
+        return 'ok'
 
