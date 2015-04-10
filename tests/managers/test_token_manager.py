@@ -62,6 +62,7 @@ class TestTokenManager(TestCase):
     @patch('alf.managers.TokenManager._request_token')
     def test_get_token_data_should_obtain_new_token(self, _request_token):
         self.manager.reset_token()
+
         self.manager._get_token_data()
 
         self.assertTrue(_request_token.called)
@@ -72,9 +73,9 @@ class TestTokenManager(TestCase):
         expires = Token.calc_expires_on(100)
         _request_token.return_value = {'access_token': 'new_access_token',
                                        'expires_on': expires}
+
         self.manager._token = Token('access_token',
                                     expires_on=expires)
-        import pdb; pdb.set_trace()
         self.manager._update_token()
 
         self.assertTrue(_request_token.called)

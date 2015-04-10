@@ -25,7 +25,7 @@ class Token(object):
 
     @staticmethod
     def calc_expires_on(expires_in=0):
-        return datetime.now() + timedelta(seconds=expires_in)
+        return datetime.now() + timedelta(seconds=int(expires_in))
 
 
 class TokenStorage(object):
@@ -39,6 +39,7 @@ class TokenStorage(object):
     def request_token(self):
         access_token = self._storage.get(TOKEN_KEY)
         expires_on = self._storage.get(TOKEN_EXPIRES)
+        
         if access_token and expires_on:
             return {TOKEN_KEY: access_token,
                     TOKEN_EXPIRES: datetime.strptime(expires_on,

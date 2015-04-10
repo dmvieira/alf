@@ -25,10 +25,11 @@ class TokenManager(object):
 
     def _get_token_data(self):
         token_data = self._token_storage.request_token()
+
         if not token_data:
             token_data = self._request_token()
             expires_in = token_data.get('expires_in', 0)
-            token_data['expires_on'] = Token.calc_expires_on(int(expires_in))
+            token_data['expires_on'] = Token.calc_expires_on(expires_in)
         return token_data
 
     def reset_token(self):
