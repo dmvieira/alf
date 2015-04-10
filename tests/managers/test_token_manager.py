@@ -61,25 +61,26 @@ class TestTokenManager(TestCase):
 
     @patch('alf.managers.TokenManager._request_token')
     def test_get_token_data_should_obtain_new_token(self, _request_token):
+        self.manager.reset_token()
         self.manager._get_token_data()
 
         self.assertTrue(_request_token.called)
 
     @patch('alf.managers.TokenManager._request_token')
     def test_update_token_should_set_a_token_with_data_retrieved(self, _request_token):
+        self.manager.reset_token()
         expires = Token.calc_expires_on(100)
         _request_token.return_value = {'access_token': 'new_access_token',
                                        'expires_on': expires}
         self.manager._token = Token('access_token',
                                     expires_on=expires)
-
+        import pdb; pdb.set_trace()
         self.manager._update_token()
 
         self.assertTrue(_request_token.called)
 
         self.assertEqual(self.manager._token.access_token, 'new_access_token')
-        self.assertEqual(self.manager._token.expires_on,
-                          expires)
+        self.assertEqual(self.manager._token.expires_on, expires)
 
     @patch('alf.managers.TokenManager._request_token')
     def test_update_token_should_set_a_token_with_data_retrieved_from_storage(self, _request_token):
@@ -93,7 +94,6 @@ class TestTokenManager(TestCase):
         self.manager._update_token()
 
         self.assertFalse(_request_token.called)
-        self.assertTrue(request_token.called)
 
         self.assertEqual(self.manager._token.access_token, 'new_access_token')
         self.assertEqual(self.manager._token.expires_on,
