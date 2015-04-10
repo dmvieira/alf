@@ -31,7 +31,7 @@ class Token(object):
 class TokenStorage(object):
     def __init__(self, custom_storage=None):
         self._storage = custom_storage or TokenDefaultStorage()
-    
+
     def __call__(self, token):
         self._storage.set(TOKEN_KEY, token.access_token)
         self._storage.set(TOKEN_EXPIRES, str(token.expires_on))
@@ -41,7 +41,7 @@ class TokenStorage(object):
         expires_on = self._storage.get(TOKEN_EXPIRES)
         if access_token and expires_on:
             return {TOKEN_KEY: access_token,
-                    TOKEN_EXPIRES: datetime.strptime(expires_on, 
+                    TOKEN_EXPIRES: datetime.strptime(expires_on,
                                                      "%Y-%m-%d %H:%M:%S.%f")}
         return dict()
 

@@ -5,11 +5,12 @@ from alf.tokens import Token, TokenError, TokenStorage
 
 class TokenManager(object):
 
-    def __init__(self, token_endpoint, client_id, client_secret, token_storage=None):
+    def __init__(self, token_endpoint, client_id, client_secret,
+                 token_storage=None):
         self._token_endpoint = token_endpoint
         self._client_id = client_id
         self._client_secret = client_secret
-	self._token_storage = TokenStorage(token_storage)
+        self._token_storage = TokenStorage(token_storage)
 
         self._token = Token()
 
@@ -24,7 +25,7 @@ class TokenManager(object):
 
     def _get_token_data(self):
         token_data = self._token_storage.request_token()
-    	if not token_data:
+        if not token_data:
             token_data = self._request_token()
             expires_in = token_data.get('expires_in', 0)
             token_data['expires_on'] = Token.calc_expires_on(expires_in)
@@ -39,7 +40,7 @@ class TokenManager(object):
         expires_on = token_data.get('expires_on', 0)
         self._token = Token(access_token,
                             expires_on)
-        self._token_storage(self_token)
+        self._token_storage(self._token)
 
     def _request_token(self):
         response = requests.post(
